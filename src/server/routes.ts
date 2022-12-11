@@ -63,7 +63,7 @@ router.post("/", async(req, res) => {
 
  if(!content || !userid || !location) return res.status(400).json({ message: "You forgot your user id and a message... what are you doing???!"})
   
- const user_id = "Justin";
+ 
 
  const ChirpData = await chirps.postChirp(userid, content, location)
 //  const NewChirpID = ChirpData.insertId
