@@ -1,5 +1,7 @@
 import * as express from 'express'
 import db from "./db";
+import chirps from './db/chirps';
+
 
 let router = express.Router();
 
@@ -38,18 +40,37 @@ router.delete("/db/chirps/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
-  let userid = req.body.user
-  let content = req.body.user
+router.put('/db/chirps/:id', async (req, res) => {
+  let id = Number(req.params.id);
+
+  const { userid, content } = req.body;
+
+  if (!userid || !content) return res.status(400).json({ message: "Need to know who you are and what you said!" });
+
+        try {
+          const ChirpToEdit = { userid, content }
+          await db.chirps.editChirp(ChirpToEdit, id)
+          res.status(201).json({ message: "Chirp has been updated" });
+        } catch (e) {
+          console.log(e);
+          res.sendStatus(500);
+        }
+})
+
+router.post("/", async(req, res) => {
+ try{  
+ const { userid, content, location } = req.body;
+
+ if(!content || !userid || !location) return res.status(400).json({ message: "You forgot your user id and a message... what are you doing???!"})
   
-  // const { content } = req.body;
-  // const newChirp = {userid: 1, content}
-  // const DBResponse = await db.chirps.postChirp(newChirp.userid, newChirp.content )
-  // const newChirpId = DBResponse.insertId;
-  // const newUser = await db.users.newUser(content);
-  // console.log(newUser);
-  try {
-    res.json(await db.chirps.postChirp( userid , content));
+ const user_id = "Justin";
+
+ const ChirpData = await chirps.postChirp(userid, content, location)
+//  const NewChirpID = ChirpData.insertId
+ 
+
+ res.status(201).json({content: "it worked!", id: 3})
+
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
@@ -57,4 +78,3 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
-// const newChirp = ( userid: 1, content: string );
